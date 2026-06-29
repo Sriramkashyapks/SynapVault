@@ -2,7 +2,7 @@
 
 SynapVault acts as a secure fortress for confidential corporate data and an active neural network for the enterprise, transforming complex, isolated document archives into an intelligent, searchable organizational brain.
 
-## 📈 Business Value & Impact
+## Business Value & Impact
 * **Eliminate Information Silos:** Gives teams a single, fortified source of truth for HR policies, compliance manuals, and technical document extraction.
 * **100% Data Privacy:** Built on a completely private organizational loop, ensuring company records are securely stored and never used to train public AI models.
 * **Instant Productivity:** Reduces manual document-search time down to seconds by synthesizing multi-page PDF context into immediate, accurate anskwers.
@@ -10,7 +10,7 @@ SynapVault acts as a secure fortress for confidential corporate data and an acti
 > [!NOTE]  
 > **Production & API Usage:** While the underlying codebase and architecture are highly optimized and fully compatible with production environments, the default setup relies on free-tier APIs primarily for learning and demonstration purposes. For actual enterprise deployments, it is highly recommended to procure paid API keys for your preferred LLM and embedding providers to achieve better rate limits, reliability, and results.
 
-## 📖 Documentation Index
+## Documentation Index
 To explore the inner workings of SynapVault, please refer to the specific documentation modules below:
 
 * **[Product Overview & Architecture](./PRODUCT_OVERVIEW.md):** Deep dive into the system architecture flow, core database models, and advanced system design talking points.
