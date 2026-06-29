@@ -48,6 +48,7 @@
 **Model: DocumentChunk (`document_chunks`)**
 * `id`: UUID (Primary Key)
 * `document_id`: UUID (Foreign Key -> `documents.id`, *Cascade Delete*)
+* `chunk_index`: Integer (Maintains ordering for citations, e.g., 'Page X')
 * `chunk_text`: Text
 * `embedding`: Vector(1024) (Mapped via `pgvector` to match Cohere's embedding dimensions)
 

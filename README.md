@@ -16,4 +16,6 @@ To explore the inner workings of SynapVault, please refer to the specific docume
 * **[Product Overview & Architecture](./PRODUCT_OVERVIEW.md):** Deep dive into the system architecture flow, core database models, and advanced system design talking points.
 * **[Development Milestones](./MILESTONES.md):** Sequential development phases and project checkpoints.
 * **[Backend Engineering & Setup](./backend/SETUP.md):** Technical documentation for the FastAPI, asyncpg, SQLAlchemy 2.0 engine, database migrations, and testing suite.
+* **[Backend Developer Guidelines](./backend/RULES.md):** Coding standards and project structure rules for the FastAPI environment.
 * **[Frontend Interface & Setup](./frontend/SETUP.md):** Technical documentation for the Next.js, TypeScript, and state management client application.
+* **[Frontend Developer Guidelines](./frontend/RULES.md):** Coding conventions, component architecture, and styling rules for Next.js.
