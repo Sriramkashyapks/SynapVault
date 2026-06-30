@@ -25,12 +25,8 @@ config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# Import the base metadata and models so Alembic knows they exist
-from models.base import Base
-from models.user import User
-from models.document import Document
-
-target_metadata = Base.metadata
+# For target_metadata, we will connect it to models in Phase 2
+target_metadata = None
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.

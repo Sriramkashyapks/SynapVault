@@ -103,7 +103,6 @@ This document outlines the sequential development phases required to achieve a p
 * [ ] **Backend (DevOps):** Write a multi-stage Dockerfile for the FastAPI backend to fully containerize the application for production deployment.
 * [ ] **Frontend:** Add "Empty States" (what the user sees before uploading a document).
 * [ ] **Frontend:** Ensure Tailwind UI is perfectly responsive and visually polished.
-* [ ] **Backend (Cloud Migration):** Transition from local disk storage and local Docker PostgreSQL to hosted Supabase Cloud Storage and Supabase Database for public deployment.
 
 ### Test Cases (`test_stress_and_edge.py`)
 * **Scenario 1:** `test_api_rate_limit_handling()` - Simulates a `429 Too Many Requests` from external APIs (Groq/Cohere) and ensures the backend returns a clean, friendly error to the frontend instead of crashing.
