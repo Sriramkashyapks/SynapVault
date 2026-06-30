@@ -6,6 +6,9 @@ from core.database import get_db, AsyncSessionLocal
 from core.config import settings
 from services.document import DocumentService
 
+from sqlalchemy import select
+from models.document import Document    
+
 router = APIRouter(
     prefix="/api/v1/documents",
     tags=["documents"]
@@ -62,6 +65,20 @@ async def upload_document(
             detail=f"File size exceeds the {settings.MAX_FILE_SIZE_MB} MB limit. (Your file size: {file_size / (1024*1024):.2f} MB)"
         )
 
+    # 2.5 Check if a document with the same filename already exists for this user
+    result = await db.execute(
+        select(Document).where(
+            Document.filename == file.filename,
+            Document.user_id == user_id
+        )
+    )
+    existing_doc = result.scalars().first()
+    if existing_doc:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"A document named '{file.filename}' has already been uploaded."
+        )
+
     # 3. Create document record in database (PENDING status)
     doc = await DocumentService.create_document(db, file.filename, user_id)
 
@@ -83,4 +100,30 @@ async def upload_document(
         "document_id": doc.id,
         "filename": doc.filename,
         "status": doc.status
+    }
+
+@router.get("/{document_id}", status_code=status.HTTP_200_OK)
+async def get_document_status(
+    document_id: uuid.UUID,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Retrieves the current metadata and parsing status of an uploaded document.
+    """
+    from sqlalchemy import select
+    from models.document import Document
+    
+    result = await db.execute(select(Document).where(Document.id == document_id))
+    doc = result.scalar_one_or_none()
+    if not doc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, 
+            detail="Document not found"
+        )
+        
+    return {
+        "document_id": doc.id,
+        "filename": doc.filename,
+        "status": doc.status,
+        "upload_date": doc.upload_date
     }
