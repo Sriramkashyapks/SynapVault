@@ -15,9 +15,16 @@ class Settings:
     # File Upload Configuration
     # Reads from .env (default: 2 MB limit if not specified)
     MAX_FILE_SIZE_MB: int = int(os.getenv("MAX_FILE_SIZE_MB", "2"))
+
+    # Embedding Configurations
+    EMBEDDING_PROVIDER: str = os.getenv("EMBEDDING_PROVIDER", "local")
+    COHERE_API_KEY: str = os.getenv("COHERE_API_KEY", "")
+    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
+
     
     @property
     def MAX_FILE_SIZE(self) -> int:
         return self.MAX_FILE_SIZE_MB * 1024 * 1024
 
 settings = Settings()
+

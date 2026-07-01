@@ -1,6 +1,7 @@
 import pytest
 from httpx import AsyncClient, ASGITransport
 from sqlalchemy import select
+import uuid
 
 from main import app
 from models.document import Document
@@ -8,13 +9,16 @@ from models.document import Document
 # Instruct pytest-asyncio to treat these as async tests
 pytestmark = pytest.mark.asyncio
 
+# Use a global UUID for this test module to avoid 409s across runs but share between scenario 1 and 3
+TEST_FILENAME = f"test_resume_{uuid.uuid4()}.pdf"
+
 async def test_upload_valid_pdf():
     """
     Scenario 1: Upload a valid PDF and assert it returns 202.
     """
     # Create a small dummy PDF signature in memory
     dummy_pdf = b"%PDF-1.4\n1 0 obj\n<<>>\nendobj\ntrailer\n<<>>\n%%EOF"
-    files = {"file": ("test_resume.pdf", dummy_pdf, "application/pdf")}
+    files = {"file": (TEST_FILENAME, dummy_pdf, "application/pdf")}
     
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
@@ -60,11 +64,11 @@ async def test_document_metadata_saved(test_db_session):
     """
     # Let's search the database for the document uploaded in the first test
     result = await test_db_session.execute(
-        select(Document).where(Document.filename == "test_resume.pdf")
+        select(Document).where(Document.filename == TEST_FILENAME)
     )
     doc = result.scalars().first()
     
     assert doc is not None
-    assert doc.filename == "test_resume.pdf"
+    assert doc.filename == TEST_FILENAME
     # Because parsing empty PDFs yields 0 pages, status will be FAILED or PENDING
     assert doc.status in ["PENDING", "PROCESSING", "COMPLETED", "FAILED"]
