@@ -56,18 +56,18 @@ This document outlines the sequential development phases required to achieve a p
 **Goal:** Convert parsed text into vector embeddings and co-locate them with relational data.
 
 ### Backend (FastAPI)
-* [ ] Update database schema: Enable `pgvector` extension and create the `DocumentChunk` model.
+* [ ] Update database schema: Enable `pgvector` extension and create the `DocumentChunk` model with a 384-dimension vector column.
 * [ ] Run Alembic migrations to apply vector schema.
 * [ ] Integrate LangChain's `RecursiveCharacterTextSplitter` to chunk the raw PDF text.
-* [ ] Connect to the Cohere Embed API to generate embeddings for each text chunk.
+* [ ] Implement `VectorService` Strategy Pattern to support local embeddings (HuggingFace `all-MiniLM-L6-v2`), Cohere (`embed-english-light-v3.0`), and OpenAI (`text-embedding-3-small` truncated to 384).
 * [ ] Implement the atomic transaction: Save all chunks and their vectors to the `document_chunks` table using `asyncpg`.
 
 ### Test Cases (`test_vectorization.py`)
 * **Scenario 1:** `test_text_chunking_logic()` - Passes a known string to LangChain and verifies it splits into the expected number of chunks with correct overlap.
-* **Scenario 2:** `test_mock_cohere_embedding()` - Mocks the Cohere Embed API call and verifies the database successfully commits a vector using `pgvector`.
+* **Scenario 2:** `test_embedding_strategy_routing()` - Verifies that the vector service routes correctly based on the `EMBEDDING_PROVIDER` config setting.
 * **Scenario 3:** `test_atomic_transaction_rollback()` - Forces an error halfway through vectorization to verify that no partial document chunks are left behind in the database.
 
-**Phase 3 End Result:** The application autonomously breaks down massive corporate PDFs into semantic blocks, converts them into mathematical vectors via Cohere, and co-locates them alongside user data in PostgreSQL.
+**Phase 3 End Result:** The application autonomously breaks down massive corporate PDFs into semantic blocks, converts them into 384-dimensional mathematical vectors (via either local offline models or cloud APIs), and co-locates them alongside user data in PostgreSQL.
 
 ---
 
