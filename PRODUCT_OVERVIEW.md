@@ -15,17 +15,18 @@
 * **SQLAlchemy 2.0 & asyncpg:** Modern Python ORM utilizing the new 2.0 async paradigm and pooled asynchronous drivers to maximize database throughput.
 * **Alembic:** Database migration tool used to track, version, and apply schema changes reliably across environments.
 
-### AI & Orchestration (API-Driven, Low-Cost Strategy)
+### AI & Orchestration (API-Driven & Self-Hosted Strategy)
 * **LangChain (Python):** Orchestration framework for document loading, deterministic text chunking (`RecursiveCharacterTextSplitter`), and prompt/context management.
 * **Groq Cloud API (Free Tier):** Access to blazing fast Llama 3 or Mixtral models for conversational synthesis, replacing OpenAI to eliminate generation costs.
-* **Cohere API:** Advanced semantic re-ranking via Cohere Rerank, and dense vector embeddings via Cohere Embed, leveraging their generous free developer tier.
+* **Embedding Strategy Pattern:** Supports local self-hosted embeddings (HuggingFace `all-MiniLM-L6-v2`), cloud APIs (Cohere `embed-english-light-v3.0`), or OpenAI (`text-embedding-3-small` truncated to 384 dimensions) using a hot-swappable provider architecture.
+* **Cohere API:** Advanced semantic re-ranking via Cohere Rerank on the free developer tier.
 
 ---
 
 ## System Architecture Flow
 1. **Asynchronous Ingestion:** A user uploads a dense PDF via the frontend dashboard. FastAPI receives the file payload and immediately fires back a `202 Accepted` status, offloading the expensive processing queue to a background task to avoid connection blocking.
 2. **Processing & Chunking:** The background routine invokes LangChain to parse the document text and divide it into overlapping semantic chunks, preserving local context and paragraph cohesion.
-3. **Vectorization & Vault Storage:** Chunks are systematically vectorized via the Cohere Embed API. Using `asyncpg` and SQLAlchemy 2.0, the relational metadata and high-dimensional vector embeddings are committed to the Supabase instance inside a single, isolated atomic transaction.
+3. **Vectorization & Vault Storage:** Chunks are vectorized using the configured provider (Local HF, Cohere, or OpenAI) mapped to a uniform 384 dimensions. Using `asyncpg` and SQLAlchemy 2.0, the relational metadata and vector embeddings are committed to the Supabase instance inside a single, isolated atomic transaction.
 4. **Neural Retrieval & Re-ranking:** When a query is initiated, FastAPI converts it into a query vector, runs an async `<->` (cosine distance) similarity search across the PostgreSQL tables to recall the top 20 relevant chunks. These chunks are then passed through the Cohere Rerank API to accurately identify the top 5 most relevant contexts.
 5. **Generation:** The re-ranked top 5 chunks are injected into a LangChain prompt and sent to the Groq API (free tier), which streams the Llama 3/Mixtral model's structured, hallucination-free response back to the client interface.
 
@@ -50,7 +51,7 @@
 * `document_id`: UUID (Foreign Key -> `documents.id`, *Cascade Delete*)
 * `chunk_index`: Integer (Maintains ordering for citations, e.g., 'Page X')
 * `chunk_text`: Text
-* `embedding`: Vector(1024) (Mapped via `pgvector` to match Cohere's embedding dimensions)
+* `embedding`: Vector(384) (Mapped via `pgvector` to match our aligned embedding dimensions)
 
 ---
 

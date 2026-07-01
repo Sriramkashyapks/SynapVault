@@ -56,3 +56,16 @@ This deployment strategy leverages advanced system design principles to ensure s
 1. **Microservices & Decoupling:** Instead of consolidating the database, web server, and cache onto a single virtual machine, the architecture utilizes specialized, purpose-built platforms for optimal performance.
 2. **Cost Engineering:** Infrastructure hosting costs are minimized by designing the system to operate efficiently within distributed, free-tier managed services (Vercel, Render, Supabase, and Upstash).
 3. **Environment Parity:** The architecture maintains a clear separation between local containerized workflows (Docker) and production managed services, adhering to modern DevOps best practices.
+
+---
+
+## 3. Environment Configuration
+
+To run and deploy the backend, configure the following environment variables (defined in your local `.env` or in the Render/Supabase cloud dashboards):
+
+* `DATABASE_URL`: Asynchronous connection string to your PostgreSQL database.
+* `REDIS_URL`: Connection string to your Redis cache/broker instance.
+* `EMBEDDING_PROVIDER`: The active embedding strategy (`local` for self-hosted HF models, `cohere` for cloud Cohere embeddings, or `openai` for cloud OpenAI embeddings).
+* `COHERE_API_KEY`: API key for Cohere (optional, required if `EMBEDDING_PROVIDER=cohere`).
+* `OPENAI_API_KEY`: API key for OpenAI (optional, required if `EMBEDDING_PROVIDER=openai`).
+
